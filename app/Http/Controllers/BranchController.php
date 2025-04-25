@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Branch;
 use Illuminate\Http\Request;
 
 class BranchController extends Controller
@@ -13,7 +14,8 @@ class BranchController extends Controller
      */
     public function index()
     {
-        //
+        $branches = Branch::all();  
+        return view('branches.index', compact('branches'));
     }
 
     /**
@@ -23,7 +25,7 @@ class BranchController extends Controller
      */
     public function create()
     {
-        //
+        return view('branches.create');
     }
 
     /**
@@ -34,7 +36,14 @@ class BranchController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
+        ]);
+
+        Branch::create($request->all());
+
+        return redirect()->route('branches.index')->with('success', 'Sucursal creada con exito.');
     }
 
     /**
@@ -45,7 +54,8 @@ class BranchController extends Controller
      */
     public function show($id)
     {
-        //
+        $branch = Branch::findOrFail($id);
+        return view('branches.show', compact('branch'));
     }
 
     /**
@@ -56,7 +66,8 @@ class BranchController extends Controller
      */
     public function edit($id)
     {
-        //
+        $branch = Branch::findOrFail($id);
+        return view('branches.edit', compact('branch'));
     }
 
     /**
@@ -68,7 +79,15 @@ class BranchController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
+        ]);
+
+        $branch = Branch::findOrFail($id);
+        $branch->update($request->all());
+
+        return redirect()->route('branches.index')->with('success', 'Sucursal actualizada con exito.');
     }
 
     /**
@@ -79,6 +98,9 @@ class BranchController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $branch = Branch::findOrFail($id);
+        $branch->delete();
+
+        return redirect()->route('branches.index')->with('success', 'Sucursal eliminada con exito.');
     }
 }
